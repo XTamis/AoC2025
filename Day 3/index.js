@@ -7,24 +7,37 @@ fs.readFile('input.txt', 'utf8', (err, data) => {
         console.error('Error reading file:', err);
         return;
     }
+
     const inputArr = data.split('\n').filter(item => item);
 
-    inputArr.forEach((bank => {
-        let firstLargest = 0;
-        let secondLargest = 0;
+    inputArr.forEach(bank => {
+        const batteryAmount = 12;
+        const batteryArr = Array(batteryAmount).fill(null);
+
+        let filled = 0;
+        let toRemove = bank.length - batteryAmount;
 
         for (let x = 0; x < bank.length; x++) {
-            if (bank[x] > firstLargest && x != bank.length - 1) {
-                firstLargest = bank[x];
-                secondLargest = 0;
-            } else if (bank[x] > secondLargest) {
-                secondLargest = bank[x];
+            const digit = bank[x];
+
+            while (
+                filled > 0 &&
+                toRemove > 0 &&
+                batteryArr[filled - 1] < digit
+                ) {
+                filled--;
+                toRemove--;
+            }
+
+            if (filled < batteryAmount) {
+                batteryArr[filled] = digit;
+                filled++;
+            } else {
+                toRemove--;
             }
         }
 
-        totalNumber = firstLargest + secondLargest;
-        total += Number(totalNumber);
-    }));
-
+        total += Number(batteryArr.join(""))
+    });
     console.log(total);
 });
